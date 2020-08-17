@@ -1,7 +1,11 @@
-# MagicHome-Python API
-MagicHome Wifi protocol for Python.
+# MagicHome-C++ API
+MagicHome Wifi protocol for C++.
+
+<b>Rewrite to convert the Python library to a C++ one for use on an ESP8266</b>
 
 This utility was designed for use with devices compatible with the MagicHome Wifi app.
+
+
 
 ### This project is inactive and I am not working on it. I will gladly review and merge pull requests, though!
 
