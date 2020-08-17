@@ -1,7 +1,9 @@
-# MagicHome-C++ API
-MagicHome Wifi protocol for C++.
+# MagicHome-Arduino API
+MagicHome Wifi protocol in C++ using arduino libraries.
 
-<b>Rewrite to convert the Python library to a C++ one for use on an ESP8266</b>
+<b>Rewrite to convert the Python library to a C++ one for use on an ESP32(should be similar to ESP8266)</b>
+
+
 
 This utility was designed for use with devices compatible with the MagicHome Wifi app.
 
