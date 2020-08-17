@@ -28,17 +28,43 @@ using namespace std;
 class MagicHomeAPI{
     private:
     const int API_PORT = 5577;
-    string device_ip;
-    int device_type;
+    string ip;
+    int type;
     bool keep_alive = true;
     time_t latest_connection = time(0);
-    WebSocketsClient webSocket;
+    WebSocketsClient socket;//implement socket
 
     public:
-    MagicHomeAPI(string device_ip, int device_type){
+    MagicHomeAPI(string ip, int type){
         //Initialize device
-        this->device_ip = device_ip;
-        this->device_type = device_type;
+        this->ip = ip;
+        this->type = type;
         
+    }
+
+    void turn_on(MagicHomeAPI device){
+        if(device.type < 4){
+            device.send_bytes(0x71, 0x23, 0x0F, 0xA3);
+        }else{
+            device.send_bytes(0xCC, 0x23, 0x33);
+        }
+    }
+
+    void turn_off(MagicHomeAPI device){
+        if(device.type < 4){
+            device.send_bytes(0x71, 0x24, 0x0F, 0xA4);
+        }else{
+            device.send_bytes(0xCC, 0x24, 0x33);
+        }
+    }
+    //change return type
+    void get_status(MagicHomeAPI device){
+        if(device.type == 2){
+            device.send_bytes(0x81, 0x8A, 0x8B, 0x96);
+            return device.socket.recv(15); //will need to figure out what this is getting
+        }else{
+            device.send_bytes(0x81, 0x8A, 0x8B, 0x96);
+            return device.socket.recv(14);
+        }
     }
 };
