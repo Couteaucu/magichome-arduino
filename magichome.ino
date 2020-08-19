@@ -167,5 +167,23 @@ class MagicHomeAPI{
         return sum & 0xFF;
     }
 
-    void send_bytes(MagicHomeAPI device, )
+    void send_bytes(MagicHomeAPI device, int* bytes){
+         /*Send commands to the device.
+
+        If the device hasn't been communicated to in 5 minutes, reestablish the
+        connection.
+        */
+
+       //check connection time
+
+       try{
+           if(check_connection_time >= 290){
+               Serial.println("Connection timed out, restablishing.");
+               //connect to device
+           }
+        auto message_length = sizeof(bytes);
+       }catch(exception e){
+           Serial.println("");
+       }
+    }
 };
