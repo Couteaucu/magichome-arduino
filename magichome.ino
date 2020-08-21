@@ -15,6 +15,7 @@ It currently supports:
 #include <string>
 #include <ctime>
 #include <iostream>
+#include <list>
 
 using namespace std;
 
@@ -37,38 +38,54 @@ public:
 
     void turn_on(){
         if (type < 4){
-            int bytes[4] = [0x71, 0x23, 0x0F, 0xA3];
+            int bytes[4] = {0x71, 0x23, 0x0F, 0xA3};
             send_bytes(bytes);
         }
         else{
-            int bytes[3] = [0xCC, 0x23, 0x33];
+            int bytes[3] = {0xCC, 0x23, 0x33};
             send_bytes(bytes);
         }
     }
 
     void turn_off(){
         if (type < 4){
-            int bytes[4] = [0x71, 0x24, 0x0F, 0xA4];
+            int bytes[4] = {0x71, 0x24, 0x0F, 0xA4};
             send_bytes(bytes);
         }
         else{
-            int bytes[4] = [0xCC, 0x24, 0x33];
+            int bytes[4] = {0xCC, 0x24, 0x33};
             send_bytes(bytes);
         }
     }
     //change return type
     int get_status(){
         if (type == 2){
-            int bytes[4] = [0x81, 0x8A, 0x8B, 0x96];
+            int bytes[4] = {0x81, 0x8A, 0x8B, 0x96};
             send_bytes(bytes);
+
             udp.parsePacket();
-            int buffer;
-            udp.read(buffer, 15);
-            return udp.recv(15); //number is buffer size, The return value is a bytes object representing the data received.
+
+            const int BUFFERSIZE = 15;
+            uint8_t buffer[BUFFERSIZE];
+            memset(buffer, 0, BUFFERSIZE);
+            uint8_t recieve_byte  = udp.read(buffer,BUFFERSIZE);
+            if(recieve_byte > 0){
+                return recieve_byte; //number is buffer size, The return value is a bytes object representing the data received.
+            }
         }
         else{
-            send_bytes(0x81, 0x8A, 0x8B, 0x96);
-            return udp.recv(14);
+           int bytes[4] = {0x81, 0x8A, 0x8B, 0x96};
+           send_bytes(bytes);
+
+            udp.parsePacket();
+
+            const int BUFFERSIZE = 14;
+            uint8_t buffer[BUFFERSIZE];
+            memset(buffer, 0, BUFFERSIZE);
+            uint8_t recieve_byte = udp.read(buffer,BUFFERSIZE);
+            if(recieve_byte > 0){
+                return recieve_byte; //number is buffer size, The return value is a bytes object representing the data received.
+            }
         }
     }
 
@@ -164,16 +181,17 @@ public:
         }
 
         if (type == 4){
-            send_bytes(0xBB, preset_number, speed, 0x44);
+            int bytes[4] = {0xBB, preset_number, speed, 0x44};
+            send_bytes(bytes);
         }
-        else{
+        else{ //probably not an int, list in python
             int message[] = {0x61, preset_number, speed, 0x0F};
             send_bytes(*(message + [calculate_checksum(message)]));
         }
     }
 
-    int calculate_checksum(int *bytes){
-        //Calculate the checksum from fan array of bytes.
+    int calculate_checksum(int* bytes){
+        //Calculate the checksum from an array of bytes.
         int sum = 0;
         for (int i = 0; i < sizeof(bytes); i++){
             sum += bytes[i];
@@ -181,16 +199,20 @@ public:
         return sum & 0xFF;
     }
 
-    void send_bytes(int bytes) {
+    void send_bytes(int* bytes) {
         //Send commands to the device.
         udp.beginPacket(ip, API_PORT);
 
         try {
             auto message_length = sizeof(bytes);
+            auto buffer = struct.pack("B"*message_length, *bytes);//need c++ equilvient
+            auto buffersize;//how  to get?
+            udp.write(buffer, buffersize);
+            udp.endPacket();
         }
-        catch (exception e)
+        catch (exception e) //subject to change
         {
-            Serial.println("");
+            Serial.println(e.what());
         }
     }
 };
