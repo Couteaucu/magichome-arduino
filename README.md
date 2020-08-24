@@ -3,7 +3,8 @@ MagicHome Wifi protocol in C++ using arduino libraries.
 
 <b>Rewrite to convert the Python library to a C++ one for use on an ESP32(should be similar to ESP8266)</b>
 
-
+<b>Rewrite on hold because I realized I can just use Adafruit and MQTT library to control these devices through IFTTT. It is most definetly not in a working state.
+the send function requires a packing function that I'm not sure how to translate from python.</b>
 
 This utility was designed for use with devices compatible with the MagicHome Wifi app.
 
